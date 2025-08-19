@@ -43,8 +43,11 @@ router.put("/:hootId", verifyToken, async (req, res) => {
         if (!hoot.author.equals(req.user._id)) {
             return res.status(403).send("You're not allowed to do that!");
         }
-        const updatedHoot = await Hoot.findByIdAndUpdate
+        const updatedHoot = await Hoot.findByIdAndUpdate(req.params.hootId, req.body, { new: true });
 
+        updatedHoot._doc.author = req.user;
+
+        res.status(200).json(updatedHoot);
     } catch (err) {
         res.status(500).json({ err: err.message });
     }
