@@ -65,6 +65,24 @@ router.delete("/:hootId", verifyToken, async (req, res) => {
     } catch (err) {
         res.status(500).json({ err: err.message });
     }
+});
+
+// POST /hoots/:hootId/comments
+router.post("/:hootId/comments", verifyToken, async (req, res) => {
+    try {
+        req.body.author = req.user._id;
+        const hoot = await Hoot.findById(req.params.hootId);
+        hoot.comments.push(req.body);
+        await hoot.save();
+
+        const newComment = hoot.comments[hoot.comments.length - 1];
+
+        newComment._doc.author = req.user;
+
+        res.status(201).json(newComment);
+        } catch (err) {
+        res.status(500).json({ err: err.message });
+    }
 })
 
 
